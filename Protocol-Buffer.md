@@ -20,3 +20,39 @@
 
 Proto file(*.proto) -> Compile -> Soruce file(*.java, *.py)
 이렇게 생성된 데이터 파일을 프로그래밍 언어에서 불러 데이터 클래스를 사용하면 된다.
+
+# Style Guide
+This document provides a style guide for .proto files. By following these conventions, you'll make your protocol buffer message definitions and their corresponding classes consistent and easy to read.
+
+## Message And Field Names
+Use CamelCase (with an initial capital) for message names – for example, SongServerRequest. Use underscore_separated_names for field names – for example, song_name.
+
+message SongServerRequest {
+  required string song_name = 1;
+}
+Using this naming convention for field names gives you accessors like the following:
+
+### C++:
+  const string& song_name() { ... }
+  void set_song_name(const string& x) { ... }
+
+### Java:
+  public String getSongName() { ... }
+  public Builder setSongName(String v) { ... }
+This document provides a style guide for .proto files. By following these conventions, you'll make your protocol buffer message definitions and their corresponding classes consistent and easy to read.
+
+## Message And Field Names
+Use CamelCase (with an initial capital) for message names – for example, SongServerRequest. Use underscore_separated_names for field names – for example, song_name.
+
+message SongServerRequest {
+  required string song_name = 1;
+}
+Using this naming convention for field names gives you accessors like the following:
+
+### C++:
+  const string& song_name() { ... }
+  void set_song_name(const string& x) { ... }
+
+### Java:
+  public String getSongName() { ... }
+  public Builder setSongName(String v) { ... }
