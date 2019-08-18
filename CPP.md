@@ -98,7 +98,7 @@ getName() 메소드 반환값 리턴시 사용되는 복사 생성자를 변화�
 
 #### 임시객체는 R-VALUE다. 
 
-String &&r - getName(); // getName이 리턴하는 임시객체
+String &&reference - getName(); // getName이 리턴하는 임시객체
 
 **&&referenct는 R-VALUE 참조자**
 
@@ -106,3 +106,24 @@ String &&r - getName(); // getName이 리턴하는 임시객체
 
 
 
+```cpp
+    String(String &&rhs) { //R-VALUE REFERENCE
+        len = rhs.len;
+        strData = rhs.strData;
+        rhs.strData = nullptr;
+    }
+
+    String &operator=(String &&rhs) {
+        std::cout << "String &operator=(String&&) : " << this << std::endl;
+        len = rhs.len;
+        strData = rhs.strData;
+        rhs.strData = nullptr;
+        return *this;
+    }
+```
+
+String(String &&rhs)는 R-VALUE 참조자를 인자로 가지는 생성자이다. getName()의 리턴값인 res가 인자로 대입된다. 새롭게 생성 될 임시객체는 res의 strData를 얕은복사하고, res가 가리키던 strData 포인터에 null을 가리킨다.
+
+두번째 연산 생성자에 의해 a는 임시객체의 strData를 얕은복사 받고, 임시객체의 strData 포인터는 null을 가리킨다.
+
+결과적으로 res의 strData -> 임시객체의 strData -> a의 strData로 얕은복사 되었다. **이를 이동 시맨틱**이라하고, 깊은 복사대신 **R-VALUE 참조 및 이동을** 통해 얕은복사를 실행한다. 
