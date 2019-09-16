@@ -31,3 +31,45 @@ WebSocket을 지원하는 브라우저와 웹 서버
 웹 서버 중에서는 Apache에서 별도의 모듈을 설치하여 WebSocket을 사용할 수 있다. JEE 환경의 WAS에서는 Jetty, GlassFish에서 WebSocket을 사용할 수 있다. 또한 Node.js에서도 WebSocket을 사용할 수 있다.
 
 출처: https://d2.naver.com/helloworld/1336
+
+Handshake
+===============
+WebSocket은 HTTP 기반으로 Handshaking을 한다. 어떠한 방식인지 잠깐 훑어보자.
+
+Handshake 요청
+```
+GET /chat HTTP/1.1
+Host: server.example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+Origin: http://example.com
+Sec-WebSocket-Protocol: v10.stomp, v11.stomp, my-team-custom
+Sec-WebSocket-Version: 13
+```
+Connection: Upgrade : HTTP 사용 방식을 변경하자.
+Upgrade : websocket : WebSocket을 사용하자.
+Sec-WebSocket-Protocol: xxx, yyy, zzz : WebSocket을 쓰면서 이 중에서 protocol을 골라서 쓰자.
+Sec-WebSocket-Key : 보안을 위한 요청 키.
+
+Handshake 응답
+===================
+
+```
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+101 Switching Protocols : Handshake 요청 내용을 기반으로 다음부터 WebSocket으로 통신할 수 있다.
+Sec-WebSocket-Accept : 보안을 위한 응답 키 - base64.encode(Sec-WebSocket-Key.concat(GUID))
+```
+
+WebSocket Sevrer를 운용할 때의 유의사항
+==================================
+HTTP에서 동작하나, 그 방식이 HTTP와는 많이 상이하다.
+- REST한 방식의 HTTP 통신에서는 많은 URI를 통해 application이 설계된다.
+- WebSocket은 하나의 URL을 통해 Connection이 맺어지고, 후에는 해당 Connection으로만 통신한다.
+
+Handshake가 완료되고 Connection을 유지한다.
+- 전통적인 HTTP 통신은 요청-응답이 완료되면 Connection을 close한다. 때문에 이론상 하나의 Server가 Port 수의 한계(n<65535)를 넘는 client의 요청을 처리할 수 있다.
+- WebSocket은 Connection을 유지하고 있으므로, 가용 Port 수만큼의 Client와 통신할 수 있다.
