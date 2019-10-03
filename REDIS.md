@@ -35,8 +35,14 @@ Redis는 **REmote DIctionary Server**의 약자이다.
 
 ### 2. Set
 	- String 의 집합니다. 여러개의 값을 하나의 Value내에 넣는다. 
+	- key : value = 1 : N
+	- Value는 입력된 순서와 상관 없이 저장되며, 중복되지 않음
+	- Sets에서는 집합이라는 의미로 value를 member라 부름 
 	- Set간의 연산을 지원한다!!! - 집합인 만큼 교집합, 합집합, 차이(Differences)를 매우 빠른 시간내에 추출한다.
-	
+	- SET은 내부적으로 2가지 구조를 사용한다.
+	  -> 데이터가 정수, 멤버 개수가 512개 이하일 때는 정수 배열(intset)에 저장.
+	  -> 멤버 개수가 512 이상일 때, 해시테이블에 저장 
+	  
 ### 3. Sorted Set 
 	- Set에 "Score"라는  필드가 추가된 데이터 형으로 Scroe는 일종의 "가중치" 정도로 생각하면 된다.
 	- score 오름차순으로 정렬된다. 
