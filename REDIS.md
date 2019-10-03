@@ -55,23 +55,37 @@ Redis는 **REmote DIctionary Server**의 약자이다.
 
 ## Persistence 
 
-**Redis는 데이터를 disk에 저장할 수 있다. 서버가 shutdown된 후 restart되어도 disk에 저장해놓은 데이터를 다시 읽어서 메모리에 로드하기 때문에 데이터가 유실되지 않는다. 
+**Redis는 데이터를 disk에 저장할 수 있다. 서버가 shutdown된 후 restart되어도 disk에 저장해놓은 데이터를 다시 읽어서 메모리에 로드하기 때문에 데이터가 유실되지 않는다.** 
 
 이 데이터를 저장하는 방법이 **Snapshotting** 방식과 **AOF**(Append on File) 두가지가 있다. 
 
 ### 1. Snapshotting (RDB) 방식 
 - 순간적으로 메모리에 있는 내용은 DISK에 전체를 옮겨 담는 방식,
-	##### 1.1 SAVE - Blocking방식으로 순간적으로 Redis의 모든 동작을 정지시키고, 그때의 Snapshot을 Disk에 저장한다.
-	##### 2.2 BGSAVE - Non - Blocking 방식으로 별도의 Process를 띄운 후, 명령어 수행 당시의 메모리 Snapshot을 Disk에 저장한다. 저장 순간에 Redis는 멈추지 않는다. 
+	##### 1.1 SAVE - Blocking방식으로 순간적으로 Redis의 모든 동작을 정지시키고, 그때의 Snapshot을 Disk에 저장한다. [**동기, 쓰레드 생성 안함, 따라서 작업 시간이 길다.**]
 
-	##### 장점 : 메모리의 snapshot을 그대로 뜬 것이기 때문에, 서버 restart시 snapshot만 load하면 되므로 restart 시간이 빠르다.
-	##### 단점 : snapshot을 추출하는데 시간이 오래 걸리며, snapshot 추출된후 서버가 down되면 snapshot 추출 이후 데이타는 유실된다. (백업 시점의 데이타만 유지된다는 이야기)
+redis.conf
+- Save 900 1
+- save 300 10
+- save 60 10000
+
+위 설정은 900초에 1건이 변경 or 300초에 10건이 변경 or 60초에 10000건이 변경되면 file로 스냅샷 하라는 설정이다. RDB는 스냅샷이지 File에 실시간 저장 되는것이 아니다. 
+
+Save 명령어는 모든 작업을 멈추고 현재 메모리에 대한 데이터를 file에 저장한다. 이 작업은 데이터가 많을수록 긴 시간이 필요하다. save는 동기 방식이기에 새로운 Thread를 생성하지 않는다.
+
+##### 2.2 BGSAVE - Non - Blocking 방식으로 별도의 Process를 띄운 후, 명령어 수행 당시의 메모리 Snapshot을 Disk에 저장한다. 저장 순간에 Redis는 멈추지 않는다. 
+	
+BGSAVE는 특정 시점에 Redis의 메모리를 데이터 파일로 저장하는 스냅샷이고 비동기 방식으로 Thread를 생성하여 file에 저장한다. 
+
+##### 장점 : 메모리의 snapshot을 그대로 뜬 것이기 때문에, 서버 restart시 snapshot만 load하면 되므로 restart 시간이 빠르다.
+##### 단점 : snapshot을 추출하는데 시간이 오래 걸리며, snapshot 추출된후 서버가 down되면 snapshot 추출 이후 데이타는 유실된다. (백업 시점의 데이타만 유지된다는 이야기)
 
 
 ### AOF (Append On File) 방식
 - Redis의 모든 Write/update 를 log 파일에 기록하는 방식. 서버가 재 시작될 때 write/update operation을 순차적으로 재 실행해 데이터를 복구한다. 
 - operation이 발생할 때 마다 매번 기록하기 때문에 항상 현재 시점까지 기록할 수 있다.
 - 기본적으로 Non-blocking Call이다. 
+- Non-Blocking 비동기로 동작하기에 AOF를 위한 **다른 쓰레드들이 존재한다!!!**
+(AOF를 위한 Thread가 존재한다. 그러나 **명령을 수행하기 위한 Thread는 1개이기에 Redis를 Single Thread라 하는것임.**)
 
 	##### 장점 : Log file에 대해서 append만 하기 때문에, log write 속도가 빠르며, 어느 시점에 server가 down되더라도 데이타 유실이 발생하지 않는다.
 	##### 단점 : 모든 write/update operation에 대해서 log를 남기기 때문에 로그 데이타 양이 RDB 방식에 비해서 과대하게 크며, 복구시 저장된 write/update operation을 다시 replay 하기 때문에 restart속도가 느리다.
