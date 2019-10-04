@@ -42,11 +42,30 @@ Redis는 **REmote DIctionary Server**의 약자이다.
 	- SET은 내부적으로 2가지 구조를 사용한다.
 	  -> 데이터가 정수, 멤버 개수가 512개 이하일 때는 정수 배열(intset)에 저장.
 	  -> 멤버 개수가 512 이상일 때, 해시테이블에 저장 
-	  
+
 ### 3. Sorted Set 
+	- 레디스는 Sorted Set을 내부적으로 Zset이라고 한다.
 	- Set에 "Score"라는  필드가 추가된 데이터 형으로 Scroe는 일종의 "가중치" 정도로 생각하면 된다.
+	- key 하나에 여러개의 score와 value로 구성된다.
+	- value는 score를 기준으로 sort되며 중복되지 않음.
+	- score가 같으면 value를 기준으로 sort 됨
+	- sorted sets에서는 value를 member라 부른다.
+	- value는 score로 sort되며 중복되지 않는다. 
 	- score 오름차순으로 정렬된다. 
 
+##### Sorted Set 내부 구조
+	Sorted Set은 내부적으로 2가지 데이터 구조로 저장된다.
+	1. (멤버 수 <= 128) & (value의 길이가 모두 64byte이하) -> **Zip List**
+	2. (멤버 수 > 129) || (여러 멤버중 하나의 value라도 65byte 이상) -> **Skip List** 
+
+	- Zip List: 메모리 절약에 최적화된 구조, 레디스는 메모리 데이터베이스이고 데이터 타입에 따라 메모리 오버헤드가 많을 수 있다. 따라서 성능을 해치지 않는 범위에서 메모리 절약을 할 수 있는 데이터 구조를 사용하는데 그것이 Zip List이다. 
+	
+	아래와 같은 구조를 지니고 있다. 
+	{ [zlbytes] [zltail] [zllen] [**entry 1**] [**entry 2**] [**entry 3**] [zend] }
+	
+	- 스킵 리스트(SKIP LIST): Sorted Set의 메인 데이터 구조 
+	이를 열어보면 ZRANGE는 수백만 건의 데이터에서 어떻게 빨리 조회할 수 있는지를 알 수 있다.
+	
 ### 4. Hashes 
 	- hash는 value내에 filed/string value 쌍으로 이루어진 테이블을 저장하는 데이터 구조체이다. RDBMS에서 PK 1개와, String 필드 하나로 이루어진 테이블이라 이해하면 된다.
 
