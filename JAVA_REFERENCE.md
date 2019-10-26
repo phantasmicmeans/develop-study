@@ -61,7 +61,6 @@ public void doSomething() {
 이후 “return”시 메소드를 종료하며 참조를 해제해제하며 Unreachable 되어지고 GC의 대상이 된다.  
 
 ## Weak Reference 
-=============
 
 Weakly Referenced Object
 **A weakly referenced object is cleard by the Garbage Collector when it's weakly reachable.**
