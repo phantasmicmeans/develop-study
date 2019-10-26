@@ -17,6 +17,12 @@ Heap의 객체들에 대해 참조는 다음과 같다.
 
 **즉 Marking이란 객체 참조의 Root Set 원소를들을 탐색하며 각 원소가 Heap Memory내의 특정 객체를 참조하고 있는지 판단하는 행위를 말하며 아래처럼 나타낼 수 있다.**
 
+![](https://d2.naver.com/content/images/2015/06/helloworld-329631-2.png)
+
+출처: https://d2.naver.com/helloworld/329631
+
+&nbsp;
+
 Marking에 의해 Heap Memory 내에는 체크되지 않은 객체들이 존재하게 되는데, GC는 이들을 제거한다. 이 과정을 Sweep이라 한다.
 즉 기본적인 GC의 원리는 **Mark & Sweep** 이며 이를 **stop the world** 라고 한다. GC과정에서는 모든 스레드가 일시적으로 멈추게된다.
 
