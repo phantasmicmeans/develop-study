@@ -2,7 +2,7 @@ Strong Reference & Weak Reference
 ==============================
 JVM 내의 Reference란 무엇인지에 대해 먼저 이해해야 하며, 이를 GC와 관련해 이해하는 것이 좋다.
 
-### JVM Heap Memory Reference 
+## JVM Heap Memory Reference 
 JVM의 Garbage Collector가 Garbage Collecting을 행하는 기준을 설명한다.
 
 일반적으로 Garbage Collector는 Stack내의 원소들을 훑으며 각 원소가 Heap Memory내의 어떠한 객체를 참조하고 있는지 체크하고 기록한다. 일반적인 경우 Stack내의 원소를  객체 참조의 Root Set이라 한다. 물론 이것만 있는 것은 아니다. 결론적으로 이를 Marking이라고 한다.
@@ -31,7 +31,7 @@ GC의 기본원리는 위와 같다. 조금 더 상세하게 들어가면 Young 
 결론적으로 GC를 행할 때 stop the world가 발생하게 되어 모든 스레드가 일시 정지하게 된다.
 이 시간을 각 상황에 맞게 튜닝하는 작업은 GC 튜닝이라고 한다.
 
-### Strong Reference
+## Strong Reference
 
 위에서 **객체 참조의 Root Set**에 대해 설명하였다. Heap내의 다른 객체에 의해 참조되어진 객체일지라도 Root Set이 존재하면 이는 Reachable하며 GC의 대상이 아니다.
 
@@ -60,7 +60,7 @@ public void doSomething() {
 위와 같은 scope내의 buffer는 return 전까지 Root Set이 존재하는 Strong Referenced 객체이다.
 이후 “return”시 메소드를 종료하며 참조를 해제해제하며 Unreachable 되어지고 GC의 대상이 된다.  
 
-Weak Reference 
+## Weak Reference 
 =============
 
 Weakly Referenced Object
