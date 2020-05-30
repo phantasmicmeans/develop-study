@@ -40,5 +40,15 @@ topic은 category이자 특정 record가 publishing 되어지는 feed name이다
  
 각 topic에 대해 kafka cluster는 다음과 같은 partitioned log를 maintain한다.
 
-topic은 category이자 특정 record가 publishing 되어지는 feed name이다. Kafka에서의 topic은 언제나 multi-subscriber이다. 즉, 0 ~ many consumers는 해당 topic에 write 되어진 데이터를 subscribe할 수 있다는 얘기이다. 
+<img src="https://user-images.githubusercontent.com/20153890/83323118-a9c14b00-a297-11ea-85c7-8c8095a6fd9d.png" width=500>
+
+각 partition은 ordered, immutable sequence of records로 이루어져 있으며 지속적으로 구조화된 commit log로 append 된다.
+
+partition내의 records는 각각 offset이라 불리는 sequential id number를 부여받는다. 이 offset은 partitions내에서 각 record를 식별하는 unique한 성질을 가진다.
+
+Kafka cluster는 보존 기간을 두고 publishing 되어진 모든 records를 지속적으로 유지하는데, 해당 기간 내에는 data가 consume 되어도 계속 유지한다. 
+
+예를들어 보존 정책을(retention policy) 2일로 설정하면 record publish후 이틀간은 사용 가능하며, 이후 공간 확보를 위해 free up space한다(폐기).
+
+예를 들어, 보존 정책을 이틀로 설정하면 레코드가 발행된 후 이틀 동안 사용할 수 있으며, 그 후에는 공간을 확보하기 위해 폐기된다.
 
