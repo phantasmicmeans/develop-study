@@ -85,7 +85,15 @@ consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지
 
 다수의 consumer instance가 같은 consumer group에 포함된 경우, 인입 record는 각 instance들로 load-balancing 된다. 
 
-그러나 각기 다른 consumer group에 존재시, 각 record는 모든 consumer들에게 broad cast 된다. 
+그러나 각기 다른 consumer group에 존재시, 각 record는 모든 consumer들에게 broadcast 된다. 
 
 <img src="https://user-images.githubusercontent.com/20153890/83324429-37a13400-a2a0-11ea-88bb-35439694f61b.png" width=450>
+
+Kafka cluster는 2대의 서버로 구성되어있고, P0 - P3의 partition을 가진다. 또한 2개의 consumer group으로 구성되어 있다.
+
+각 그룹은 모두 여러 consumer instance로 구성되어 있다.
+
+kafka의 consuming은 위에서 설명했듯이 log partitions 분할을 통해 각 consumer instance가 어느 시점에서든 공정하게 data를 consuming 할 수 있도록 한다. 또한 각 consumer는 배타적 consumer가 되도록 한다. 
+
+
 
