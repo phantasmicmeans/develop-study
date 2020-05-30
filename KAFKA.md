@@ -42,4 +42,3 @@ topic은 category이자 특정 record가 publishing 되어지는 feed name이다
 
 topic은 category이자 특정 record가 publishing 되어지는 feed name이다. Kafka에서의 topic은 언제나 multi-subscriber이다. 즉, 0 ~ many consumers는 해당 topic에 write 되어진 데이터를 subscribe할 수 있다는 얘기이다. 
 
-
