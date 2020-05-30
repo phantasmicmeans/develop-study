@@ -89,7 +89,7 @@ consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지
 
 <img src="https://user-images.githubusercontent.com/20153890/83324429-37a13400-a2a0-11ea-88bb-35439694f61b.png" width=450>
 
-Kafka cluster는 2대의 서버로 구성되어있고, P0 - P3의 partition을 가진다. 또한 2개의 consumer group으로 구성되어 있다.
+Kafka cluster는 2대의 서버로 구성되어있고, P0 - P3의 partition을 가진다. 또한 2개의 consumer group으로 구성되어 있다. produce 되어지는 각 record는 round-robin에 의해 각 partition 들에 분배되어 저장 될 것이고, 해당 record에 대한 leader 및 follower 가 결정되어 복제할 것이다. 
 
 각 그룹은 모두 여러 consumer instance로 구성되어 있다.
 
