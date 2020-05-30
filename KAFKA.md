@@ -41,13 +41,15 @@ topic은 category이자 특정 record가 publishing 되어지는 feed name이다
 각 topic에 대해 kafka cluster는 다음과 같은 partitioned log를 유지한다. partition 내의 한 칸을 log라고 생각하면 된다.
 각 partition은 ordered, immutable sequence of records로 이루어져 있으며 지속적으로 구조화된 log로 append 된다.
 
+아래 그림은 하나의 topic이 3개의 partition에 분산되어 있는 모습을 나타낸다. 일반적으로 kafka topic은 아래처럼 여러개의 partition에 나눠 write 된다. 
+
 <img src="https://user-images.githubusercontent.com/20153890/83323118-a9c14b00-a297-11ea-85c7-8c8095a6fd9d.png" width=500>
 
 partition내의 records는 각각 offset이라 불리는 sequential id number를 부여받는다. 이 offset은 partitions내에서 각 record를 식별하는 unique한 성질을 가진다.
 
 Kafka cluster는 보존 기간을 두고 publishing 되어진 모든 records를 지속적으로 유지하는데, 해당 기간 내에는 data가 consume 되어도 계속 유지한다. 
 
-예를들어 보존 정책을(retention policy) 2일로 설정하면 record publish 후 이틀간 사용 가능하며, 이후 공간 확보를 위해 free up space한다(폐기).
+예를들어 retention policy 2일로 설정하면 record publish 후 이틀간 사용 가능하며, 이후 공간 확보를 위해 free up space한다.
 
 <img src="https://user-images.githubusercontent.com/20153890/83323391-649e1880-a299-11ea-8734-51275cc3e29c.png" width=430>
 
@@ -63,7 +65,31 @@ log내에서 각 consumer 별 유지되는 유일한 metadata는 해당 consumer
 #### Distribution
 
 각 partition은 leader 역할을 하는 하나의 서버와, follower 역할을 하는 0개 이상의 서버를 가진다.
-leader는 파티션을 위한 모든 read, write 요청을 처리하는 반면 follower는 leader를 수동적으로 복제한다.
+leader는 파티션을 위한 모든 read, write 요청을 처리하는 반면 follower는 leader를 수동적으로 복제한다. 
+
+아래 그림으로 이해하면 쉽다. 
+
+<img src="https://user-images.githubusercontent.com/20153890/83324231-cca32d80-a29e-11ea-96cf-2a61b01fed65.png" width=500>
+
+- 출처: https://engkimbs.tistory.com/691
 
 leader에 문제가 발생하면 follower중 하나가 새로운 leader로 선출된다. 각 서버는 일부 파티션의 leader 역할을 하고 다른 서버에게는 follower 역할을 하는데, 이런식으로 kafka cluster 내 부하 조절을 한다.
+
+
+### Producers
+producer는 특정 topic으로 data를 publish 한다. 또한 어떠한 partition에 어떤 record를 할당할지에 대한 책임을 가진다. 일반적으로 round-robin으로 단순히 부하 균형을 맞추기 위해 수행된다. (다른 partition 함수 사용 가능)
+
+### Consumers
+
+consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다. 
+
+ㅇㄹ
+consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다.
+
+모든 
+consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다. 
+
+다수ㅡ
+consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다.
+
 
