@@ -38,11 +38,10 @@ Kafka에서의 client-server communication은 TCP protocol을 통해 진행된�
 
 topic은 category이자 특정 record가 publishing 되어지는 feed name이다. Kafka에서의 topic은 언제나 multi-subscriber이다. 즉, 0 ~ many consumers는 해당 topic에 write 되어진 데이터를 subscribe할 수 있다는 얘기이다. 
  
-각 topic에 대해 kafka cluster는 다음과 같은 partitioned log를 maintain한다.
+각 topic에 대해 kafka cluster는 다음과 같은 partitioned log를 유지한다. partition 내의 한 칸을 log라고 생각하면 된다.
+각 partition은 ordered, immutable sequence of records로 이루어져 있으며 지속적으로 구조화된 log로 append 된다.
 
 <img src="https://user-images.githubusercontent.com/20153890/83323118-a9c14b00-a297-11ea-85c7-8c8095a6fd9d.png" width=500>
-
-각 partition은 ordered, immutable sequence of records로 이루어져 있으며 지속적으로 구조화된 commit log로 append 된다.
 
 partition내의 records는 각각 offset이라 불리는 sequential id number를 부여받는다. 이 offset은 partitions내에서 각 record를 식별하는 unique한 성질을 가진다.
 
@@ -53,11 +52,10 @@ Kafka cluster는 보존 기간을 두고 publishing 되어진 모든 records를 
 <img src="https://user-images.githubusercontent.com/20153890/83323391-649e1880-a299-11ea-8734-51275cc3e29c.png" width=430>
 
 log내에서 각 consumer 별 유지되는 유일한 metadata는 해당 consumer에 대한 offset이다.
-이 offset은 consumer에 대해 컨트롤 된다. 일반적으로는 consumer가 records를 선형적으로 읽는다.(순차적으로 읽는단 의미그
+이 offset은 consumer에 대해 컨트롤 된다. 일반적으로는 consumer가 records를 선형적으로 읽는다.(순차적으로 읽는단 의미)
 
 그러나 각 consumer는 이 offset을 변화시킬 수 있기에, 자신이 원하는 순서에 따라 records를 소비할 수 있다.
 
-실제로 소비자당 기준으로 유지되는 메타데이터는 로그에서 해당 소비자의 오프셋 또는 위치뿐이다.
 예를 들면 각 소비자는 이전에 읽었던 data를 다시 consume 하기 위해 offset을 이전으로 돌려 사용할 수 있고, 가장 최근의 offset으로 설정해 지금 데이터부터 소비할 수 있다.
 
 이 log partitions은 Kafka cluster에 있는 서버를 통해 분산 되고, fault-tolerant를 위해 구성 가능한 여러 서버에 복제된다.
