@@ -30,3 +30,16 @@ First a few concepts:
    - Kafka topic을 기존 애플리케이션이나 데이터 시스템에 연결하는 재사용 가능한 producer나 consumer를 구축하고 실행할 수 있도록 한다. 예를 들어 rdb에 대한 커넥터는 테이블의 모든 변경사항을 캡처할 수 있다.
 - **The Admin API**
    - Kafka topic, broker 등에 대한 상태 관리
+   
+ 
+Kafka에서의 client-server communication은 TCP protocol을 통해 진행된다. 
+ 
+### Topics and Logs
+
+topic은 category이자 특정 record가 publishing 되어지는 feed name이다. Kafka에서의 topic은 언제나 multi-subscriber이다. 즉, 0 ~ many consumers는 해당 topic에 write 되어진 데이터를 subscribe할 수 있다는 얘기이다. 
+ 
+각 topic에 대해 kafka cluster는 다음과 같은 partitioned log를 maintain한다.
+
+topic은 category이자 특정 record가 publishing 되어지는 feed name이다. Kafka에서의 topic은 언제나 multi-subscriber이다. 즉, 0 ~ many consumers는 해당 topic에 write 되어진 데이터를 subscribe할 수 있다는 얘기이다. 
+
+
