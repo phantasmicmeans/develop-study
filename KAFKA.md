@@ -48,9 +48,7 @@ partition내의 records는 각각 offset이라 불리는 sequential id number를
 
 Kafka cluster는 보존 기간을 두고 publishing 되어진 모든 records를 지속적으로 유지하는데, 해당 기간 내에는 data가 consume 되어도 계속 유지한다. 
 
-예를들어 보존 정책을(retention policy) 2일로 설정하면 record publish후 이틀간은 사용 가능하며, 이후 공간 확보를 위해 free up space한다(폐기).
-
-예를 들어, 보존 정책을 이틀로 설정하면 레코드가 발행된 후 이틀 동안 사용할 수 있으며, 그 후에는 공간을 확보하기 위해 폐기된다.
+예를들어 보존 정책을(retention policy) 2일로 설정하면 record publish 후 이틀간 사용 가능하며, 이후 공간 확보를 위해 free up space한다(폐기).
 
 <img src="https://user-images.githubusercontent.com/20153890/83323391-649e1880-a299-11ea-8734-51275cc3e29c.png" width=430>
 
@@ -62,4 +60,12 @@ log내에서 각 consumer 별 유지되는 유일한 metadata는 해당 consumer
 실제로 소비자당 기준으로 유지되는 메타데이터는 로그에서 해당 소비자의 오프셋 또는 위치뿐이다.
 예를 들면 각 소비자는 이전에 읽었던 data를 다시 consume 하기 위해 offset을 이전으로 돌려 사용할 수 있고, 가장 최근의 offset으로 설정해 지금 데이터부터 소비할 수 있다.
 
+이 log partitions은 Kafka cluster에 있는 서버를 통해 분산 되고, fault-tolerant를 위해 구성 가능한 여러 서버에 복제된다.
+
+#### Distribution
+
+각 partition은 leader 역할을 하는 하나의 서버와, follower 역할을 하는 0개 이상의 서버를 가진다.
+leader는 파티션을 위한 모든 read, write 요청을 처리하는 반면 follower는 leader를 수동적으로 복제한다.
+
+leader에 문제가 발생하면 follower중 하나가 새로운 leader로 선출된다. 각 서버는 일부 파티션의 leader 역할을 하고 다른 서버에게는 follower 역할을 하는데, 이런식으로 kafka cluster 내 부하 조절을 한다.
 
