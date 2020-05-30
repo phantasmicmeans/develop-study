@@ -52,3 +52,14 @@ Kafka cluster는 보존 기간을 두고 publishing 되어진 모든 records를 
 
 예를 들어, 보존 정책을 이틀로 설정하면 레코드가 발행된 후 이틀 동안 사용할 수 있으며, 그 후에는 공간을 확보하기 위해 폐기된다.
 
+<img src="https://user-images.githubusercontent.com/20153890/83323391-649e1880-a299-11ea-8734-51275cc3e29c.png" width=430>
+
+log내에서 각 consumer 별 유지되는 유일한 metadata는 해당 consumer에 대한 offset이다.
+이 offset은 consumer에 대해 컨트롤 된다. 일반적으로는 consumer가 records를 선형적으로 읽는다.(순차적으로 읽는단 의미그
+
+그러나 각 consumer는 이 offset을 변화시킬 수 있기에, 자신이 원하는 순서에 따라 records를 소비할 수 있다.
+
+실제로 소비자당 기준으로 유지되는 메타데이터는 로그에서 해당 소비자의 오프셋 또는 위치뿐이다.
+
+
+실제로 소비자당 기준으로 유지되는 메타데이터는 로그에서 해당 소비자의 오프셋 또는 위치뿐이다.
