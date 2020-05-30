@@ -83,13 +83,9 @@ producer는 특정 topic으로 data를 publish 한다. 또한 어떠한 partitio
 
 consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다. 
 
-ㅇㄹ
-consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다.
+다수의 consumer instance가 같은 consumer group에 포함된 경우, 인입 record는 각 instance들로 load-balancing 된다. 
 
-모든 
-consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다. 
+그러나 각기 다른 consumer group에 존재시, 각 record는 모든 consumer들에게 broad cast 된다. 
 
-다수ㅡ
-consumer는 consumer group에 포함된다. 특정 topic으로 publish 되어지는 record들은 해당 topic을 subscribe 하는 consumer group 내의 instance들로 전달된다. 각 consumer instance는 각기 다른 process 혹은 다른 machine에 분포되어 있을 수 있다.
-
+<img src="https://user-images.githubusercontent.com/20153890/83324429-37a13400-a2a0-11ea-88bb-35439694f61b.png" width=450>
 
