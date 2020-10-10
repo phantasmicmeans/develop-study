@@ -181,3 +181,7 @@ List<@WhiteSpace String> tags 검증시 아래 2개의 항목이 들어가있음
 ![image](https://user-images.githubusercontent.com/20153890/95650433-acbe2900-0b1e-11eb-9d06-080b1290f1ec.png)
 
 id, cpId의 validation annotation @NotBlank는 사진처럼 FieldConstraintLocation 만 있음 
+
+## 해결
+- TYPE_USE / lombok의 Getter와 결합되면서 뭔가 이슈가 있나..
+- getter를 따로 정의해주니 발생하지 않음.
