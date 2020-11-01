@@ -54,4 +54,65 @@ public interface Iterator<E> {
 }
 ```
 
-앞서 살펴봤던 Observable은 
+앞서 살펴봤던 Observable은 Observer들을 등록하고, `notifyObserver()`를 통해 Observer들에게 이벤트를 push하는 방식이였지만, Iterable의 경우 Iterator를 통해(next()) 다음 이벤트?를 호출한다. 그렇기에 Observable의 경우 이벤트 주체가 이벤트를 Push, Iterable의 경우 이벤트 수신자가 이벤트를 Pull한다고 볼 수 있는것이다.
+
+코드로 보면 아래와 같을 수 있다. 
+
+**Iterable - Pull**
+```java
+  Iterable<Integer> iterable = () -> { 
+      new Iterator<Integer>() { // iterator 구현 
+              int start = 0; // 1~10 까지 event 방출
+              int MAX = 10;
+
+              @Override
+              public boolean hasNext() {
+                 return this.start < MAX;
+              }
+
+              @Override
+              public Integer next() {
+                  return this.start++;
+              }
+          };
+      };
+
+  for (Iterator<Integer> iterator = iterable.iterator(); iterator.hasNext();) {
+      System.out.println(iterator.next()); // event pull 
+  }
+
+  for (Integer i : iterable) { // 위와 동일 
+      System.out.println(i);
+  }
+```
+
+**Observable - Push**
+```java
+    @Test
+    public void ObservableTest() throws InterruptedException {
+        ExecutorService ex = Executors.newFixedThreadPool(1);
+        RxObservable<String> observable = new ConcreteRxObservable(ex);
+        RxObserver<String> observer = new RxObserver<String>() {
+            @Override
+            public void onNext(String next) {
+                System.out.println("RxObserver B");
+                System.out.println(Thread.currentThread().getName());
+                System.out.println("RxObserver B " + next);
+            }
+
+            @Override
+            public void onComplete() {
+                System.out.println("RxObserver B Complete");
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        };
+
+        observable.registerObserver(observer);
+        observable.notifyObservers("Event!"); // event push 
+        ex.awaitTermination(1000, TimeUnit.MILLISECONDS);
+    }
+```
