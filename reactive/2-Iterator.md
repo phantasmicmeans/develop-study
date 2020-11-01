@@ -67,4 +67,120 @@ RxJava에서의 경우 Observable은 0을 포함해 일정 개수의 이벤트�
 이 둘은 동시에 호출되지 않으며 onComplete(), onError() 호출 이후 onNext()는 호출되지 않는다.
 
 
+## RxObservable / RxObserver 테스트 
 
+**RxObservable interface & ConcreteRxObservable** (이벤트 주체 - Subject)
+```java
+
+public interface RxObservable<T> {
+    void registerObserver(RxObserver<T> observer);
+    void unregisterObserver(RxObserver<T> observer);
+    void notifyObservers(T event);
+    void notifyComplete();
+}
+
+public class ConcreteRxObservable implements RxObservable<String> {
+
+    private final ExecutorService ex;
+    private final Set<RxObserver<String>> observers = new CopyOnWriteArraySet<>();
+
+    public ConcreteRxObservable(ExecutorService ex) {
+        this.ex = ex;
+    }
+
+    @Override
+    public void registerObserver(RxObserver<String> observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void unregisterObserver(RxObserver<String> observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String event) {
+        observers.forEach(observer -> {
+            ex.submit(() -> observer.onNext(event));
+        });
+    }
+
+    @Override
+    public void notifyComplete() {
+        observers.forEach(observers -> {
+            ex.submit(observers::onComplete);
+        });
+    }
+}
+
+```
+<br>
+
+**ConcreteRxObsever** - Observer
+
+```java
+public class ConcreteRxObserver implements RxObserver<String> {
+    @Override
+    public void onNext(String next) {
+        System.out.println("RxObserver A");
+        System.out.println(Thread.currentThread().getName());
+        System.out.println("RxObserver A " + next);
+    }
+
+    @Override
+    public void onComplete() {
+        System.out.println("RxObserver A");
+        System.out.println(Thread.currentThread().getName());
+        System.out.println("onComplete");
+    }
+
+    @Override
+    public void onError(Exception e) {
+        System.out.println(Thread.currentThread().getName());
+        System.out.println(e.getMessage());
+    }
+}
+```
+
+**ObservableTest code**
+
+```java
+    @Test
+    public void ObservableTest() throws InterruptedException {
+        ExecutorService ex = Executors.newFixedThreadPool(10);
+        RxObservable<String> observable = new ConcreteRxObservable(ex);
+        RxObserver<String> observerA = new ConcreteRxObserver();
+        RxObserver<String> observerB = new RxObserver<String>() {
+            @Override
+            public void onNext(String next) {
+                System.out.println("RxObserver B");
+                System.out.println(Thread.currentThread().getName());
+                System.out.println("RxObserver B " + next);
+            }
+
+            @Override
+            public void onComplete() {
+                System.out.println("RxObserver B Complete");
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        };
+
+        observable.registerObserver(observerA);
+        observable.registerObserver(observerB);
+        observable.notifyObservers("Event!");
+        observable.notifyObservers("Event!");
+        observable.notifyObservers("Event!");
+        observable.notifyObservers("Event!");
+        observable.notifyObservers("Event!");
+        observable.notifyComplete();
+
+
+        ex.awaitTermination(1000, TimeUnit.MILLISECONDS);
+    }
+```
+
+Observer pattern을 통한 비동기 처리 + Itertor pattern을 통한 스트림의 `끝`과 `error`처리를 통해 간단하게 Reactive Stream을 구현해봤다.
