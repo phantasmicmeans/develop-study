@@ -14,11 +14,12 @@ public interface Iterator<T> {
 ```
 
 위 Iterator interface는 하나씩 항목을 검사하기 위한 next() method와 다음 항목의 존재 여부를 위한 hasNext() method를 선언한다. 
-이는 스트림의 '끝'을 나타내는 역할을 한다.
+이는 스트림의 '끝'을 알리는 역할을 한다.
 
 ## Observer pattern + Iterator Pattern = Reactive Stream
 
-- Iterator로 스트림의 '끝'을 나타내고, Observer pattern의 async한 이벤트 실행을 결합하면 아래와 같을 수 있다.
+Iterator로 스트림의 '끝'을 나타내고, Observer pattern의 async한 이벤트 실행을 결합하면 아래와 같을 수 있다.
+아래 interface는 Observer + Iterator + Error 처리를 모두 포함한 RxObserver이다. 
 
 ```java
 public interface RxObserver<T> {
@@ -34,4 +35,19 @@ RxObserver는 Iterator와 비슷하면서도 조금 다르다. next() 대신 onN
 Iterator는 next()를 처리하면서 error 를 발생시킬 수 있다. 이 error는 RxObserver로 전파되어야 처리가 용이할 것이다.
 이를 위해 onError() 콜백도 추가한다.
 
-위 인터페이스는 리액티브 스트림에서의 모든 컴포넌트 사이에 데이터가 흐르는 방법을 정의한다. 
+위 인터페이스는 리액티브 스트림에서의 모든 컴포넌트 사이에 데이터가 흐르는 방법을 정의한다. RxObserver는 기존 Observer interface 와 유사하나 위에서도 언급했다시피 Iterator + Error 처리를 포함하게 된다.
+
+**RxObserver**
+```java
+public interface RxObserver<T> {
+    void onNext(T next);
+    void onComplete();
+    void onError(Exception e);
+}
+``` 
+**Observer**
+```java
+public interface Observer<T> {
+    void observe(T event);
+}```
+
