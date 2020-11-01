@@ -1,4 +1,4 @@
-## Reactive Streams
+## Duality, Reactive Streams
 
 앞선 글에서 Observer pattern + Iterator 패턴(이벤트의 `끝`, 그리고 `Error`) == Reactive Stream이라고 정리했다. 
 
