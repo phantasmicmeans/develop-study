@@ -67,7 +67,12 @@ Observable이 제공할 데이터가 많든, 이벤트를 받은 Observer의 처
 
 Subscriber가 Publisher와 상호 작용하기 위한 중재자가 바로 Subscription 이다. 
 Observable은 event Push 방식으로 모든 Observer에게 이벤트를 전파했었다.
-이때 말하는 구독 정보는 오해의 여지가 있다. 구독자명, 구독 이름 같은 메타 정보들이 아니고 
+
+그러나 Reactive Stream은 기본적으로 event pull 방식으로서 조금 더 유연하게 backpressure 처리가 가능해진다.
+이때 사용할 정보가 Subscription인데 아래와 같은 명세로 이루어져있다.
+
+Subscriber는 Subscription을 토해 이벤트를 요청하고, Publisher는 직접 Subscriber에게 event를 전달한다. 
+이때 중요한 것은 Subscriber는 Subscription을 통해 request 요청을 하고, Publisher는 request 요청을 받아 Subscriber에게 직접 onNext()를 호출한다.
 
 ```java
 
