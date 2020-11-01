@@ -129,9 +129,7 @@ public class ConcreteRxObserver implements RxObserver<String> {
 
     @Override
     public void onComplete() {
-        System.out.println("RxObserver A");
-        System.out.println(Thread.currentThread().getName());
-        System.out.println("onComplete");
+        System.out.println("RxObserver A Complete");
     }
 
     @Override
