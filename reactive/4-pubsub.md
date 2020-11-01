@@ -87,7 +87,63 @@ Subscriber는 `Subscription.request(long n)`을 통해 이벤트를 요청하고
 
 이때 중요한 것은 Subscriber는 Subscription을 통해 request 요청을 하고, Publisher는 request 요청을 받아 Subscriber에게 직접 onNext()를 호출한다.
 
-Reactive-stream 명세 관련 대부분의 글에서는 아래와 같이 표현한다.
 
+<img src="https://user-images.githubusercontent.com/20153890/97805665-ece67680-1c9a-11eb-98b0-f78d612d6c49.png" width=500>
 
+예제 코드는 아래와 같다. 
 
+```java
+        Stream<Integer> integerStream = IntStream.range(0, 100).boxed();
+
+        Publisher<Integer> publisher = new Publisher<Integer>() {
+            Iterator<Integer> iterator = integerStream.iterator();
+
+            @Override
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new Subscription() {
+                    @Override
+                    public void request(long l) {
+                        if (!iterator.hasNext()) {
+                            subscriber.onComplete();
+                        }
+
+                        while (l-- > 0 && iterator.hasNext()) {
+                            System.out.println("[Publisher] : " + Thread.currentThread().getName());
+                            subscriber.onNext(iterator.next());
+                        }
+                    }
+
+                    @Override
+                    public void cancel() {
+
+                    }
+                });
+            }
+        };
+
+        Subscriber<Integer> subscriber = new Subscriber<Integer>() {
+            private Subscription subscription;
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                this.subscription = subscription;
+                this.subscription.request(1);
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                System.out.println("[Subscriber] : " + Thread.currentThread().getName() + " event : " + integer);
+                this.subscription.request(1);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onComplete() {
+                System.out.println("onComplete");
+            }
+        };
+
+        publisher.subscribe(subscriber);
+```
