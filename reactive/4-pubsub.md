@@ -87,5 +87,7 @@ Subscriber는 `Subscription.request(long n)`을 통해 이벤트를 요청하고
 
 이때 중요한 것은 Subscriber는 Subscription을 통해 request 요청을 하고, Publisher는 request 요청을 받아 Subscriber에게 직접 onNext()를 호출한다.
 
+Reactive-stream 명세 관련 대부분의 글에서는 아래와 같이 표현한다.
+
 
 
