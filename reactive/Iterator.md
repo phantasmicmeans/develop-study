@@ -49,5 +49,18 @@ public interface RxObserver<T> {
 ```java
 public interface Observer<T> {
     void observe(T event);
-}```
+}
+```
+
+## Subject - Observable & Subscriber - Observer
+리액티브 Observable class는 Observer pattern의 Subject와 일치한다. 이 말은 즉슨 Observable은 이벤트 발생의 주체 역할을 한다는 얘기이다.
+또한 Subscriber abstract classs는 Observer interface를 구현하고 이벤트를 소비한다. 
+
+아래처럼 나타낼 수 있다.
+
+A | B | C
+---|--|---
+Observable(Subject) | onNext(T) -> <br> onComplete() -> <br> onError(Thrwowable) -> | Observer(Subscriber)
+
+
 
