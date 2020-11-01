@@ -84,3 +84,6 @@ public interface Subscription {
     void cancel();
 }
 ```
+
+Subscriber는 `Subscription.request(long n)`을 통해 
+
