@@ -60,7 +60,11 @@ public interface Observer<T> {
 
 A | B | C
 ---|--|---
-Observable(Subject) | onNext(T) -> <br> onComplete() -> <br> onError(Thrwowable) -> | Observer(Subscriber)
+Observable(Subject) | onNext(T) -> <br> onComplete() -> <br> onError(Throwable) -> | Observer(Subscriber)
+
+RxJava에서의 경우 Observable은 0을 포함해 일정 개수의 이벤트를 보내며 Observer의 onNext(T)를 호출한다. 
+이후 Observable은 onComplete() 혹은 onError(Throwable)을 호출해 이벤트의 `끝` 혹은 에러를 발생시킨다. 
+이 둘은 동시에 호출되지 않으며 onComplete(), onError() 호출 이후 onNext()는 호출되지 않는다.
 
 
 
