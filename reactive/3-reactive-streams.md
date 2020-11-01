@@ -116,3 +116,5 @@ public interface Iterator<E> {
         ex.awaitTermination(1000, TimeUnit.MILLISECONDS);
     }
 ```
+
+결론은 Iterable <-> Observable 간에는 Duality가 존재하고, 이는 event Push(Observable#notifyObservers) / Pull(Iterable#next)의 차이이다.
