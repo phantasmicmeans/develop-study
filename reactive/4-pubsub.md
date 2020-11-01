@@ -63,19 +63,14 @@ org.reactivestreams
 ```
 
 기존 Observable에서는 단순히 `notifyObservers(T event)` 메소드를 통해 모든 옵저버에게 이벤트를 알렸다. 
-Observable이 제공할 데이터가 많든, 이벤트를 받은 Observer의 처리시간이 길든 신경쓰지 않고 말이다.
+Observable이 제공할 데이터가 많든, 이벤트를 받은 Observer의 처리시간이 길든 신경쓰지 않고 말이다. 이러한 경우는 backpressure 조절이 불가능하다. 
 
-Subscriber가 Publisher와 상호 작용하기 위한 중재자가 바로 Subscription 이다. 
-Observable은 event Push 방식으로 모든 Observer에게 이벤트를 전파했었다.
+Subscriber가 Publisher와 상호 작용하기 위한 중재자가 바로 Subscription 이다. Observable은 event Push 방식으로 모든 Observer에게 이벤트를 전파했었다.
 
-그러나 Reactive Stream은 기본적으로 event pull 방식으로서 조금 더 유연하게 backpressure 처리가 가능해진다.
+그러나 Reactive Stream은 기본적으로 event pull 방식으로서 유연하게 backpressure 처리가 가능해진다.
 이때 사용할 정보가 Subscription인데 아래와 같은 명세로 이루어져있다.
 
-Subscriber는 Subscription을 토해 이벤트를 요청하고, Publisher는 직접 Subscriber에게 event를 전달한다. 
-이때 중요한 것은 Subscriber는 Subscription을 통해 request 요청을 하고, Publisher는 request 요청을 받아 Subscriber에게 직접 onNext()를 호출한다.
-
 ```java
-
 package org.reactivestreams;
 
 public interface Subscription {
@@ -85,5 +80,11 @@ public interface Subscription {
 }
 ```
 
-Subscriber는 `Subscription.request(long n)`을 통해 
+Subscriber는 `Subscription.request(long n)`을 통해 이벤트를 요청하고, Publisher는 직접 Subscriber에게 onNext() 호출을 통해 event를 전달한다. 
+이 말은 Subscriber는 `Subscription.request(long n)` signal을 demand 해야만 onNext() signal을 받을 수 있다 는 얘기이다.
+
+이때 중요한 것은 Subscriber는 Subscription을 통해 request 요청을 하고, Publisher는 request 요청을 받아 Subscriber에게 직접 onNext()를 호출한다.
+
+Reactive-Streams 정의에는 아래와 같이 쓰여있다.
+
 
