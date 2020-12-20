@@ -1,3 +1,5 @@
+https://micrometer.io/docs/concepts
+
 ## 1. Registry 
 Meter is the interface for collecting a set of measurements (which we individually call metrics) about your application. 
 Micrometer에서 Meter는 `MeterRegistry`로 부터 만들어진다. 이를 서포트하는 모든 모니터링 시스템(ex. prometheus)들은 MeterRegistry를 구현하여 개발된다.
@@ -32,8 +34,45 @@ compositeCounter.increment(); (3)
 3. The simple registry counter is incremented, along with counters for any other registries in the composite.
 
 
+## 3. Global Registry
+Micrometer는 static한 global registry인 ```Metrics.globalRegistry```를 제공한다. 이 globalRegistry 또한 Composite Registry 이다. 
 
-## Counter
+```java
+	public Object gaugeRegistry(@PathVariable String gauge) {
+		Metrics.gauge("firstListSize", 10);
+		Metrics.gauge("listSize", Tags.empty(), new ArrayList<>(), List::size);
+
+		return Metrics.globalRegistry.get(gauge).gauge().measure();
+```
+
+## 4. Meter
+Meter는 다음과 같은 컴포넌트를 포함한다.
+
+- Gauge
+- Counter
+- Timer
+- DistributionSummary
+- LongTaskTimer
+- TimeGauge
+- FunctionCounter
+- FunctionTimer
+
+각 Meter는 name과 dimension에 의해 uniquely identified 되는데, 일반적으로 tag가 짧기에 사용한다. 
+     
+### 4.1 Tag Naming
+태그 이름을 지정할 때 meter 이름에 대해 설명하는 동일한 소문자 닷 표기법 따르는 것이 좋다. 또한 Tag의 value는 null이면 안된다. 
+
+만일 number of http requests and the number of database calls를 측정한다고 하면 아래와 같을 수 있다.
+
+**Recommended approach**
+
+```
+registry.counter("database.calls", "db", "users")
+registry.counter("http.requests", "uri", "/api/users")
+```
+
+
+## 5. Counter
 Counter는 단일 메트릭 (개수)를 report 하는데 쓰인다. 양수의 fixed 된 값을 증가시킬 수 있다. 
 - Counters report a single metric, a count.
 - The Counter interface allows you to increment by a fixed amount, which must be positive
@@ -86,7 +125,7 @@ Counter counter = Counter
     .register(registry);
 ```
 
-## Gauge
+## 6. Gauge
 gauge는 현재 value를 핸들링하는데 적절하다. 예를들면 컬렉션 혹은 맵의 사이즈, 러닝 상태의 스레드 개수 등
 - A gauge is a handle to get the current value.
 - Typical examples for gauges would be the size of a collection or map or number of threads in a running state.
