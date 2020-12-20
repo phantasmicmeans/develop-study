@@ -1,12 +1,50 @@
-### Counter
+## 1. Registry 
+Meter is the interface for collecting a set of measurements (which we individually call metrics) about your application. 
+Micrometer에서 Meter는 `MeterRegistry`로 부터 만들어진다. 이를 서포트하는 모든 모니터링 시스템(ex. prometheus)들은 MeterRegistry를 구현하여 개발된다.
+
+Micrometer에서의 `SimpleMeterRegistry`는 각 meter의 최근 value들을 메모리에 들고 있다. 아직 무언가 모니터링 시스템이 없다면 아래처럼 생성해도 된다.
+```java
+MeterRegistry registry = new SimpleMeterRegistry();
+```
+---
+**NOTE**
+
+A SimpleMeterRegistry is autowired for you in Spring-based apps.
+
+---
+
+## 2. Composite Regisitries
+Micrometer는 하나의 모니터링 시스템에서 여러 meteric을 동시에 보여주기 위한 용도로, CompositeMeterRegistry라는 multiple registry를 지원한다.
+```java
+CompositeMeterRegistry composite = new CompositeMeterRegistry();
+
+Counter compositeCounter = composite.counter("counter");
+compositeCounter.increment(); (1)
+
+SimpleMeterRegistry simple = new SimpleMeterRegistry();
+composite.add(simple); (2)
+
+compositeCounter.increment(); (3)
+```
+
+1. Increments are NOOPd until there is a registry in the composite. The counter’s count will still yield 0 at this point.
+2. A counter named "counter" is registered to the simple registry.
+3. The simple registry counter is incremented, along with counters for any other registries in the composite.
+
+
+
+## Counter
 Counter는 단일 메트릭 (개수)를 report 하는데 쓰인다. 양수의 fixed 된 값을 증가시킬 수 있다. 
 - Counters report a single metric, a count.
 - The Counter interface allows you to increment by a fixed amount, which must be positive
 
+---
 **Tip**
+
 - 시간측정 혹은 summarize 목적으로 사용하지 말아라. 
 - Never count something you can time with a `Timer` or summarize with a `DistrubutionSummary`
 
+---
 카운터에서 그래프와 경고를 생성할 때, 일반적으로 주어진 시간 간격 동안 일부 이벤트가 발생하는 속도를 측정하는 데 가장 관심을 기울여야 합니다.
 단순 큐를 고려해봐라. 카운터는 항목이 삽입 및 제거되는 속도와 같은 항목을 측정하는 데 사용할 수 있다.
 
@@ -33,11 +71,12 @@ Flux.interval(Duration.ofMillis(10))
         .blockLast();
 ```
 
-* A. Most counters can be created off of the registry itself with a name and, optionally, a set of tags. (1)
-* B. A slightly positively-biased random walk. (2) 
-* C. This is how you interact with a counter. You could also call counter.increment(n) to increment by more than 1 in a single operation. (3)
+1. Most counters can be created off of the registry itself with a name and, optionally, a set of tags. (1)
+2. A slightly positively-biased random walk. (2) 
+3. This is how you interact with a counter. You could also call counter.increment(n) to increment by more than 1 in a single operation. (3)
 
 There is also a fluent builder for counters on the Counter interface itself, providing access to less frequently used options like base units and description. You can register the counter as the last step of its construction by calling register.
+
 ```java
 Counter counter = Counter
     .builder("counter")
@@ -47,16 +86,19 @@ Counter counter = Counter
     .register(registry);
 ```
 
-### Gauge
+## Gauge
 gauge는 현재 value를 핸들링하는데 적절하다. 예를들면 컬렉션 혹은 맵의 사이즈, 러닝 상태의 스레드 개수 등
 - A gauge is a handle to get the current value.
 - Typical examples for gauges would be the size of a collection or map or number of threads in a running state.
 
+---
 **Tip**
+
 - Gauge는 bound가 있는 경우 사용하도록한다. request count를 모니터링하는 것은 bound가 존재하지 않아 위험하다. (Counter를 알아봐라)
 - Gauges are usefule for monitoring things with natural upper bounds. 
 - We don't recommend using a gauge to monitor things like `request count`
 - As they can grow without bound for the duration of an application instance's life.
 - **Never gauge something you can count with a `Counter`.
 
+---
 
